@@ -117,6 +117,13 @@ resource "aws_cloudwatch_log_group" "this" {
 # KMS Key
 ################################################################################
 
+locals {
+  kms_key_administrators = coalescelist(
+    var.kms_key_administrators,
+    var.kms_key_administrators_add_current ? [data.aws_iam_session_context.current.issuer_arn] : []
+  )
+}
+
 module "kms" {
   source  = "terraform-aws-modules/kms/aws"
   version = "1.1.0" # Note - be mindful of Terraform/provider version compatibility between modules
@@ -131,7 +138,7 @@ module "kms" {
   # Policy
   enable_default_policy     = var.kms_key_enable_default_policy
   key_owners                = var.kms_key_owners
-  key_administrators        = coalescelist(var.kms_key_administrators, [data.aws_iam_session_context.current.issuer_arn])
+  key_administrators        = local.kms_key_administrators
   key_users                 = concat([local.cluster_role], var.kms_key_users)
   key_service_users         = var.kms_key_service_users
   source_policy_documents   = var.kms_key_source_policy_documents

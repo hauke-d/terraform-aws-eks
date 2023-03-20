@@ -176,6 +176,12 @@ variable "kms_key_administrators" {
   default     = []
 }
 
+variable "kms_key_administrators_add_current" {
+  description = "Specifies wheter the current identity should be added as a key administrator for the KMS key"
+  type        = bool
+  default     = true
+}
+
 variable "kms_key_users" {
   description = "A list of IAM ARNs for [key users](https://docs.aws.amazon.com/kms/latest/developerguide/key-policy-default.html#key-policy-default-allow-users)"
   type        = list(string)
